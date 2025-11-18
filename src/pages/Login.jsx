@@ -43,11 +43,20 @@ const Login = () => {
           navigate(redirectPath);
         } else {
           // Fallback to dashboard if user data not available
-          window.location.href = '/dashboard';
+          navigate('/dashboard');
         }
       } else {
         console.error('❌ Login failed:', result.message);
-        setError(result.message || 'Login failed. Please check your credentials and try again.');
+        // Check if error is "Route not found" - this means API URL is wrong
+        if (result.message && result.message.includes('Route not found')) {
+          setError('Backend API not found. Please check:\n' +
+            '1. VITE_API_BASE_URL is set in Vercel\n' +
+            '2. Backend is deployed and accessible\n' +
+            '3. API routes are configured correctly\n\n' +
+            'Current API URL: ' + (import.meta.env.VITE_API_BASE_URL || '/api'));
+        } else {
+          setError(result.message || 'Login failed. Please check your credentials and try again.');
+        }
       }
     } catch (err) {
       console.error('❌ Unexpected login error:', err);

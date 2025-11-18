@@ -152,7 +152,17 @@ export const AuthProvider = ({ children }) => {
             }
           }
         } else if (typeof data.message === 'string') {
-          errorMessage = data.message;
+          // Check if it's a "Route not found" error
+          if (data.message.includes('Route not found') || data.message.includes('API route not found')) {
+            errorMessage = 'Backend API route not found. Please check:\n' +
+              '1. VITE_API_BASE_URL environment variable is set in Vercel\n' +
+              '2. Backend is deployed and running\n' +
+              '3. API routes are accessible at /api/*\n\n' +
+              'Current API Base URL: ' + (import.meta.env.VITE_API_BASE_URL || '/api') + '\n' +
+              'Trying to access: ' + error.config?.url;
+          } else {
+            errorMessage = data.message;
+          }
         } else if (typeof data.error === 'string') {
           errorMessage = data.error;
         } else if (data.errors && Array.isArray(data.errors)) {

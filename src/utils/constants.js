@@ -1,6 +1,30 @@
 // Use environment variable if set, otherwise use relative path for same-domain deployment
 // This allows the frontend to work on the same Vercel domain as the backend
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+// In Vercel, if VITE_API_BASE_URL is not set, it will use '/api' which works with rewrites
+const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  
+  // If explicitly set, use it
+  if (envUrl) {
+    return envUrl;
+  }
+  
+  // In production/Vercel, use relative path (works with vercel.json rewrites)
+  if (import.meta.env.PROD || window.location.hostname.includes('vercel.app')) {
+    return '/api';
+  }
+  
+  // In development, default to localhost
+  return 'http://localhost:8000/api';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
+
+// Log API URL for debugging (only in development)
+if (import.meta.env.DEV) {
+  console.log('🔗 API Base URL:', API_BASE_URL);
+  console.log('🔗 VITE_API_BASE_URL env:', import.meta.env.VITE_API_BASE_URL);
+}
 
 export const ROLES = {
   SUPER_ADMIN: 'super_admin',

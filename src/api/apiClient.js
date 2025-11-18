@@ -49,6 +49,19 @@ apiClient.interceptors.response.use(
       // Log server errors for debugging
       console.error('API Error:', error.response.status, error.response.data);
       
+      // Handle 404 errors (Route not found)
+      if (error.response.status === 404) {
+        const errorMsg = error.response.data?.message || 'Route not found';
+        if (errorMsg.includes('Route not found') || errorMsg.includes('API route not found')) {
+          error.userMessage = 'Backend API route not found. Please check:\n' +
+            '1. VITE_API_BASE_URL is set correctly in Vercel\n' +
+            '2. Backend is deployed and accessible\n' +
+            '3. API routes are configured correctly\n\n' +
+            'Current API Base URL: ' + API_BASE_URL + '\n' +
+            'Trying to access: ' + error.config?.url;
+        }
+      }
+      
       // For 500 errors, preserve the error details
       if (error.response.status === 500) {
         console.error('Server Error Details:', {

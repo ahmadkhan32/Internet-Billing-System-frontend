@@ -60,7 +60,6 @@ function App() {
       <BusinessProvider>
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Routes>
-          {/* Login route - must be first and accessible without auth */}
           <Route path="/login" element={<Login />} />
           
           <Route
