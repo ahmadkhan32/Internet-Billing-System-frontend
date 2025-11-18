@@ -348,7 +348,15 @@ function App() {
             }
           />
           
-          <Route path="/" element={<SmartRedirect />} />
+          {/* Smart root redirect based on user role */}
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <SmartRedirect />
+              </ProtectedRoute>
+            } 
+          />
           
           {/* 404 - Catch all unmatched routes */}
           <Route path="*" element={<NotFound />} />

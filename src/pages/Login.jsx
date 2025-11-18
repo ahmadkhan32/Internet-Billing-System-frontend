@@ -32,7 +32,7 @@ const Login = () => {
           
           // Redirect based on role
           if (user.role === ROLES.SUPER_ADMIN) {
-            redirectPath = '/super-admin/isps'; // Super Admin goes to ISP Management
+            redirectPath = '/super-admin/dashboard'; // Super Admin goes to Super Admin Dashboard
           } else if (user.role === ROLES.CUSTOMER) {
             redirectPath = '/portal'; // Customers go to their portal
           } else {
@@ -40,10 +40,10 @@ const Login = () => {
           }
           
           console.log(`✅ Redirecting ${user.role} to ${redirectPath}`);
-          window.location.href = redirectPath;
+          navigate(redirectPath, { replace: true });
         } else {
           // Fallback to dashboard if user data not available
-          window.location.href = '/dashboard';
+          navigate('/dashboard', { replace: true });
         }
       } else {
         console.error('❌ Login failed:', result.message);
