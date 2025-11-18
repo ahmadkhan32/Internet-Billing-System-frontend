@@ -30,6 +30,7 @@ import Roles from './pages/Roles';
 import ActivityLogs from './pages/ActivityLogs';
 import Invoices from './pages/Invoices';
 import NotFound from './pages/NotFound';
+import SmartRedirect from './components/SmartRedirect';
 
 import { ROLES } from './utils/constants';
 
@@ -347,7 +348,7 @@ function App() {
             }
           />
           
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<SmartRedirect />} />
           
           {/* 404 - Catch all unmatched routes */}
           <Route path="*" element={<NotFound />} />

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { ROLES } from '../utils/constants';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -22,10 +23,28 @@ const Login = () => {
       const result = await login(email, password, businessId || undefined);
       
       if (result.success) {
-        console.log('✅ Login successful, redirecting to dashboard');
-        // Redirect to dashboard - will be handled by App routing
-        // Use window.location for reliable redirect
-        window.location.href = '/dashboard';
+        console.log('✅ Login successful, redirecting based on role');
+        // Get user from localStorage to determine redirect path
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          const user = JSON.parse(savedUser);
+          let redirectPath = '/dashboard';
+          
+          // Redirect based on role
+          if (user.role === ROLES.SUPER_ADMIN) {
+            redirectPath = '/super-admin/isps'; // Super Admin goes to ISP Management
+          } else if (user.role === ROLES.CUSTOMER) {
+            redirectPath = '/portal'; // Customers go to their portal
+          } else {
+            redirectPath = '/dashboard'; // All other roles go to dashboard
+          }
+          
+          console.log(`✅ Redirecting ${user.role} to ${redirectPath}`);
+          window.location.href = redirectPath;
+        } else {
+          // Fallback to dashboard if user data not available
+          window.location.href = '/dashboard';
+        }
       } else {
         console.error('❌ Login failed:', result.message);
         setError(result.message || 'Login failed. Please check your credentials and try again.');
