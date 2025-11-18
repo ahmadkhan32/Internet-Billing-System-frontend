@@ -4,9 +4,37 @@
 const getApiBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_BASE_URL;
   
-  // If explicitly set, use it
+  // If explicitly set, validate and fix it
   if (envUrl) {
-    return envUrl;
+    let url = envUrl.trim();
+    
+    // Remove trailing slashes
+    url = url.replace(/\/+$/, '');
+    
+    // If URL doesn't end with /api, fix it
+    if (url.includes('vercel.app') || url.includes('http://') || url.includes('https://')) {
+      // It's a full URL - ensure it ends with /api
+      if (!url.endsWith('/api')) {
+        // Check if it ends with /login or other paths - remove them and add /api
+        if (url.endsWith('/login') || url.match(/\/[^\/]+$/)) {
+          // Remove the last path segment and add /api
+          url = url.substring(0, url.lastIndexOf('/')) + '/api';
+        } else {
+          // Just add /api
+          url = url + '/api';
+        }
+      }
+    } else if (!url.startsWith('/api')) {
+      // Relative path - ensure it starts with /api
+      if (url.startsWith('/')) {
+        url = '/api';
+      } else {
+        url = '/api';
+      }
+    }
+    
+    console.warn('🔧 API Base URL fixed:', envUrl, '→', url);
+    return url;
   }
   
   // In production/Vercel, use relative path (works with vercel.json rewrites)
@@ -20,10 +48,13 @@ const getApiBaseUrl = () => {
 
 export const API_BASE_URL = getApiBaseUrl();
 
-// Log API URL for debugging (only in development)
-if (import.meta.env.DEV) {
-  console.log('🔗 API Base URL:', API_BASE_URL);
-  console.log('🔗 VITE_API_BASE_URL env:', import.meta.env.VITE_API_BASE_URL);
+// Log API URL for debugging (always log in production too for troubleshooting)
+console.log('🔗 API Base URL:', API_BASE_URL);
+console.log('🔗 VITE_API_BASE_URL env:', import.meta.env.VITE_API_BASE_URL);
+if (import.meta.env.VITE_API_BASE_URL && !API_BASE_URL.endsWith('/api')) {
+  console.warn('⚠️ WARNING: VITE_API_BASE_URL should end with /api');
+  console.warn('⚠️ Current:', import.meta.env.VITE_API_BASE_URL);
+  console.warn('⚠️ Fixed to:', API_BASE_URL);
 }
 
 export const ROLES = {

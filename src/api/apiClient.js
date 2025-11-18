@@ -52,13 +52,33 @@ apiClient.interceptors.response.use(
       // Handle 404 errors (Route not found)
       if (error.response.status === 404) {
         const errorMsg = error.response.data?.message || 'Route not found';
+        const requestedUrl = error.config?.url || 'unknown';
+        const fullUrl = error.config?.baseURL ? error.config.baseURL + requestedUrl : requestedUrl;
+        
+        // Check if API_BASE_URL is incorrectly configured
+        let fixMessage = '';
+        if (API_BASE_URL.includes('/login') || API_BASE_URL.includes('/dashboard')) {
+          fixMessage = '\n\n❌ ERROR: VITE_API_BASE_URL is set incorrectly!\n' +
+            'Current (WRONG): ' + API_BASE_URL + '\n' +
+            'Should be: ' + (API_BASE_URL.includes('vercel.app') 
+              ? API_BASE_URL.replace(/\/[^\/]+$/, '/api')
+              : '/api') + '\n\n' +
+            'Fix: In Vercel, set VITE_API_BASE_URL to:\n' +
+            '- If separate backend: https://your-backend.vercel.app/api\n' +
+            '- If combined: /api (or leave empty)';
+        }
+        
         if (errorMsg.includes('Route not found') || errorMsg.includes('API route not found')) {
           error.userMessage = 'Backend API route not found. Please check:\n' +
             '1. VITE_API_BASE_URL is set correctly in Vercel\n' +
+            '   - Should end with /api (e.g., https://backend.vercel.app/api)\n' +
+            '   - OR use /api for same-domain deployment\n' +
             '2. Backend is deployed and accessible\n' +
             '3. API routes are configured correctly\n\n' +
             'Current API Base URL: ' + API_BASE_URL + '\n' +
-            'Trying to access: ' + error.config?.url;
+            'Trying to access: ' + requestedUrl + '\n' +
+            'Full URL: ' + fullUrl +
+            fixMessage;
         }
       }
       
