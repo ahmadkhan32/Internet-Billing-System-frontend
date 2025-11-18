@@ -17,18 +17,19 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Super Admin has full access to all routes
+  // Super Admin has access to everything
   if (user.role === ROLES.SUPER_ADMIN) {
     return children;
   }
 
-  // For other roles, check if they have access
+  // Check if user's role is allowed
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     // Redirect based on role
     if (user.role === ROLES.CUSTOMER) {
       return <Navigate to="/portal" replace />;
+    } else {
+      return <Navigate to="/dashboard" replace />;
     }
-    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

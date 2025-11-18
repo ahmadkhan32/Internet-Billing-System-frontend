@@ -40,10 +40,10 @@ const Login = () => {
           }
           
           console.log(`✅ Redirecting ${user.role} to ${redirectPath}`);
-          navigate(redirectPath, { replace: true });
+          navigate(redirectPath);
         } else {
           // Fallback to dashboard if user data not available
-          navigate('/dashboard', { replace: true });
+          window.location.href = '/dashboard';
         }
       } else {
         console.error('❌ Login failed:', result.message);
