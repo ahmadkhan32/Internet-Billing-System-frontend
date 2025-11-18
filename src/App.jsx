@@ -29,6 +29,7 @@ import ISPManagement from './pages/ISPManagement';
 import Roles from './pages/Roles';
 import ActivityLogs from './pages/ActivityLogs';
 import Invoices from './pages/Invoices';
+import NotFound from './pages/NotFound';
 
 import { ROLES } from './utils/constants';
 
@@ -347,6 +348,9 @@ function App() {
           />
           
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          
+          {/* 404 - Catch all unmatched routes */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
       </BusinessProvider>
