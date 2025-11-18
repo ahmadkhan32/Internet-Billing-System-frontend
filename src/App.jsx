@@ -348,17 +348,13 @@ function App() {
             }
           />
           
-          {/* Smart root redirect based on user role */}
+          {/* Root route - redirect based on auth status */}
           <Route 
             path="/" 
-            element={
-              <ProtectedRoute>
-                <SmartRedirect />
-              </ProtectedRoute>
-            } 
+            element={<SmartRedirect />}
           />
           
-          {/* 404 - Catch all unmatched routes */}
+          {/* 404 - Catch all unmatched routes (must be last) */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
